@@ -3,24 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英國旅遊打包清單</title>
+    <title>英國旅遊打包清單 - 互動版</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: Arial, "Microsoft JhengHei", sans-serif;
             max-width: 900px;
             margin: 0 auto;
             padding: 30px;
-            background: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-size: 20px;
             line-height: 2;
+            min-height: 100vh;
         }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
         h1 {
             color: #2c3e50;
             font-size: 36px;
             border-bottom: 4px solid #3498db;
             padding-bottom: 15px;
             margin-bottom: 30px;
+            text-align: center;
         }
+        
+        .progress-bar {
+            width: 100%;
+            height: 40px;
+            background: #ecf0f1;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            width: 0%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
         h2 {
             color: #e74c3c;
             font-size: 28px;
@@ -28,12 +68,15 @@
             background: #fff3cd;
             padding: 15px;
             border-left: 8px solid #e74c3c;
+            border-radius: 5px;
         }
+        
         h3 {
             color: #27ae60;
             font-size: 24px;
             margin-top: 25px;
         }
+        
         .highlight {
             background: #fff3cd;
             padding: 20px;
@@ -41,6 +84,7 @@
             margin: 20px 0;
             border: 3px solid #ffc107;
         }
+        
         .important {
             background: #ffe6e6;
             padding: 20px;
@@ -50,10 +94,12 @@
             font-size: 22px;
             font-weight: bold;
         }
+        
         ul {
             list-style: none;
             padding-left: 0;
         }
+        
         li {
             padding: 12px;
             margin: 10px 0;
@@ -61,15 +107,67 @@
             border-radius: 5px;
             border-left: 5px solid #3498db;
             font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
         }
+        
+        li:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+        
+        li.checked {
+            background: #d4edda;
+            border-left-color: #28a745;
+            opacity: 0.7;
+        }
+        
+        li.checked .item-text {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+        
         .checkbox {
             display: inline-block;
-            width: 25px;
-            height: 25px;
+            width: 30px;
+            height: 30px;
             border: 3px solid #3498db;
             margin-right: 15px;
             vertical-align: middle;
+            border-radius: 5px;
+            position: relative;
+            transition: all 0.3s ease;
         }
+        
+        .checkbox::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        
+        li.checked .checkbox {
+            background: #28a745;
+            border-color: #28a745;
+            animation: checkBounce 0.5s ease;
+        }
+        
+        li.checked .checkbox::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        @keyframes checkBounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
         .section {
             background: white;
             padding: 25px;
@@ -77,6 +175,7 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        
         .number {
             display: inline-block;
             background: #3498db;
@@ -90,168 +189,442 @@
             font-weight: bold;
             font-size: 22px;
         }
+        
+        .reset-button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            font-weight: bold;
+        }
+        
+        .reset-button:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            font-size: 16px;
+            color: #6c757d;
+        }
+        
+        @media print {
+            body {
+                background: white;
+            }
+            .reset-button {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>🇬🇧 英國16天旅遊打包清單</h1>
-    
-    <div class="important">
-        ⚠️ 最重要：防水外套、雨傘、保暖衣物必備！<br>
-        📅 日期：10/10-10/25（16天）<br>
-        🌡️ 氣溫：9-18度C
-    </div>
-
-    <h2>📦 行李箱配置</h2>
-    <div class="section">
-        <h3>✅ 可以帶7個28吋行李箱</h3>
-        <p style="font-size: 22px;">
-            <span class="number">1</span> 每人一個28吋行李箱<br>
-            <span class="number">2</span> 只裝70-80%滿<br>
-            <span class="number">3</span> 預留空間給購物
-        </p>
-    </div>
-
-    <h2>👕 每人必帶衣物（4-5天份）</h2>
-    <div class="section">
-        <ul>
-            <li><span class="checkbox"></span> 發熱衣 x 2件</li>
-            <li><span class="checkbox"></span> 長袖上衣 x 2件</li>
-            <li><span class="checkbox"></span> 薄毛衣 x 1件</li>
-            <li><span class="checkbox"></span> 厚外套 x 1件</li>
-            <li><span class="checkbox"></span> <strong>防水外套 x 1件（必備！）</strong></li>
-            <li><span class="checkbox"></span> 內衣褲 x 5套</li>
-            <li><span class="checkbox"></span> 襪子 x 5雙</li>
-        </ul>
-    </div>
-
-    <h2>👗 女生特別準備</h2>
-    <div class="section">
-        <ul>
-            <li><span class="checkbox"></span> 長裙 x 2-3條</li>
-            <li><span class="checkbox"></span> 厚褲襪 x 3-4雙（120丹以上）</li>
-            <li><span class="checkbox"></span> 備用長褲 x 1條</li>
-        </ul>
-        <div class="highlight">
-            💡 <strong>長裙+厚褲襪好處：</strong><br>
-            • 保暖度跟長褲一樣<br>
-            • 上廁所更方便<br>
-            • 更省行李空間
-        </div>
-    </div>
-
-    <h2>👞 鞋子（每人2雙）</h2>
-    <div class="section">
-        <ul>
-            <li><span class="checkbox"></span> 防水健走鞋 x 1雙（主要穿）</li>
-            <li><span class="checkbox"></span> 休閒鞋/運動鞋 x 1雙（輪替）</li>
-            <li><span class="checkbox"></span> 室內拖鞋 x 1雙</li>
-        </ul>
-    </div>
-
-    <h2>🧣 保暖配件（每人）</h2>
-    <div class="section">
-        <ul>
-            <li><span class="checkbox"></span> 毛帽 x 1頂</li>
-            <li><span class="checkbox"></span> 手套 x 1雙</li>
-            <li><span class="checkbox"></span> 圍巾 x 1條</li>
-            <li><span class="checkbox"></span> 雨傘 x 1把</li>
-        </ul>
-    </div>
-
-    <h2>💊 醫藥包</h2>
-    <div class="section">
-        <ul>
-            <li><span class="checkbox"></span> 感冒藥、退燒藥</li>
-            <li><span class="checkbox"></span> 腸胃藥</li>
-            <li><span class="checkbox"></span> 止痛藥</li>
-            <li><span class="checkbox"></span> 暈車藥（山路多）</li>
-            <li><span class="checkbox"></span> OK繃、優碘</li>
-            <li><span class="checkbox"></span> 個人處方藥</li>
-        </ul>
-    </div>
-
-    <h2>🚗 自駕必備</h2>
-    <div class="section">
-        <ul>
-            <li><span class="checkbox"></span> 國際駕照 x 2份</li>
-            <li><span class="checkbox"></span> 離線地圖（先下載）</li>
-            <li><span class="checkbox"></span> 車充 x 3個</li>
-            <li><span class="checkbox"></span> 行動電源 x 4-5個</li>
-            <li><span class="checkbox"></span> 英國電話卡/網路</li>
-            <li><span class="checkbox"></span> 緊急電話：999</li>
-        </ul>
-    </div>
-
-    <h2>📄 重要文件（務必準備）</h2>
-    <div class="section">
-        <h3>🔴 護照遺失緊急文件</h3>
-        <ul>
-            <li><span class="checkbox"></span> 護照影本 x 2份（每人）</li>
-            <li><span class="checkbox"></span> 護照大頭照 x 4張（每人，2吋白底）</li>
-            <li><span class="checkbox"></span> 身分證影本 x 2份（每人）</li>
-            <li><span class="checkbox"></span> 台灣駐英國代表處電話（存手機）</li>
-        </ul>
+    <div class="container">
+        <h1>🇬🇧 英國16天旅遊打包清單</h1>
         
-        <div class="highlight">
-            <strong>📞 台灣駐英國代表處：</strong><br>
-            倫敦：+44-20-7881-2650<br>
-            緊急聯絡：+44-7768-938-765<br>
-            <br>
-            <strong>⚠️ 護照遺失處理：</strong><br>
-            1. 先報警取得報案證明<br>
-            2. 聯絡駐英代表處<br>
-            3. 用護照影本+大頭照申請臨時證件
-        </div>
-
-        <h3>✅ 其他重要文件</h3>
-        <ul>
-            <li><span class="checkbox"></span> 機票影本/電子檔</li>
-            <li><span class="checkbox"></span> 租車確認單（紙本+電子檔）</li>
-            <li><span class="checkbox"></span> 住宿確認單（全部16天）</li>
-            <li><span class="checkbox"></span> 旅遊保險單（英文版）</li>
-            <li><span class="checkbox"></span> 信用卡影本（背面也要）</li>
-            <li><span class="checkbox"></span> 緊急聯絡人清單（含電話）</li>
-            <li><span class="checkbox"></span> 英國景點地址清單（英文版）</li>
-        </ul>
-
         <div class="important">
-            💡 <strong>文件保管方式：</strong><br>
-            • 正本隨身攜帶<br>
-            • 影本分開放（行李箱+隨身包）<br>
-            • 電子檔存雲端（Google Drive/Email）<br>
-            • 家人也留一份在台灣
+            ⚠️ 最重要：防水外套、雨傘、保暖衣物必備！<br>
+            📅 日期：10/10-10/25（16天）<br>
+            🌡️ 氣溫：9-18度C
         </div>
-    </div>
 
-    <h2>🍜 食物補給（8天自駕用）</h2>
-    <div class="section">
-        <ul>
-            <li><span class="checkbox"></span> 泡麵、即食食品</li>
-            <li><span class="checkbox"></span> 零食、餅乾</li>
-            <li><span class="checkbox"></span> 沖泡包（湯、咖啡）</li>
-            <li><span class="checkbox"></span> 燜燒罐 x 3-4個</li>
-            <li><span class="checkbox"></span> 保溫瓶 x 2個</li>
-        </ul>
-    </div>
-
-    <h2>🧺 洗衣時間表</h2>
-    <div class="section">
-        <p style="font-size: 22px; line-height: 2.2;">
-            <strong>第1次：</strong>蘇格蘭高地（第3天晚上）<br>
-            <strong>第2次：</strong>愛丁堡（第5天晚上）<br>
-            <strong>第3次：</strong>倫敦（第9天）<br>
-            <strong>第4次：</strong>倫敦（第12天）
-        </p>
-        <div class="highlight">
-            💡 共有10天住宿有洗衣機，所以不用帶太多衣服！
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar">0%</div>
         </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="checkedCount">0</div>
+                <div class="stat-label">已完成</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalCount">0</div>
+                <div class="stat-label">總共項目</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="percentageCount">0%</div>
+                <div class="stat-label">完成度</div>
+            </div>
+        </div>
+
+        <button class="reset-button" onclick="resetAll()">🔄 重置所有項目</button>
+
+        <h2>📦 行李箱配置</h2>
+        <div class="section">
+            <h3>✅ 可以帶7個28吋行李箱</h3>
+            <p style="font-size: 22px;">
+                <span class="number">1</span> 每人一個28吋行李箱<br>
+                <span class="number">2</span> 只裝70-80%滿<br>
+                <span class="number">3</span> 預留空間給購物
+            </p>
+        </div>
+
+        <h2>👕 每人必帶衣物（4-5天份）</h2>
+        <div class="section">
+            <ul>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">發熱衣 x 2件</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">長袖上衣 x 2件</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">薄毛衣 x 1件</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">厚外套 x 1件</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text"><strong>防水外套 x 1件（必備！）</strong></span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">內衣褲 x 5套</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">襪子 x 5雙</span>
+                </li>
+            </ul>
+        </div>
+
+        <h2>👗 女生特別準備</h2>
+        <div class="section">
+            <ul>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">長裙 x 2-3條</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">厚褲襪 x 3-4雙（120丹以上）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">備用長褲 x 1條</span>
+                </li>
+            </ul>
+            <div class="highlight">
+                💡 <strong>長裙+厚褲襪好處：</strong><br>
+                • 保暖度跟長褲一樣<br>
+                • 上廁所更方便<br>
+                • 更省行李空間
+            </div>
+        </div>
+
+        <h2>👞 鞋子（每人2雙）</h2>
+        <div class="section">
+            <ul>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">防水健走鞋 x 1雙（主要穿）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">休閒鞋/運動鞋 x 1雙（輪替）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">室內拖鞋 x 1雙</span>
+                </li>
+            </ul>
+        </div>
+
+        <h2>🧣 保暖配件（每人）</h2>
+        <div class="section">
+            <ul>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">毛帽 x 1頂</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">手套 x 1雙</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">圍巾 x 1條</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">雨傘 x 1把</span>
+                </li>
+            </ul>
+        </div>
+
+        <h2>💊 醫藥包</h2>
+        <div class="section">
+            <ul>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">感冒藥、退燒藥</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">腸胃藥</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">止痛藥</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">暈車藥（山路多）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">OK繃、優碘</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">個人處方藥</span>
+                </li>
+            </ul>
+        </div>
+
+        <h2>🚗 自駕必備</h2>
+        <div class="section">
+            <ul>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">國際駕照 x 2份</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">離線地圖（先下載）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">車充 x 3個</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">行動電源 x 4-5個</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">英國電話卡/網路</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">緊急電話：999</span>
+                </li>
+            </ul>
+        </div>
+
+        <h2>📄 重要文件（務必準備）</h2>
+        <div class="section">
+            <h3>🔴 護照遺失緊急文件</h3>
+            <ul>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">護照影本 x 2份（每人）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">護照大頭照 x 4張（每人，2吋白底）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">身分證影本 x 2份（每人）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">台灣駐英國代表處電話（存手機）</span>
+                </li>
+            </ul>
+            
+            <div class="highlight">
+                <strong>📞 台灣駐英國代表處：</strong><br>
+                倫敦：+44-20-7881-2650<br>
+                緊急聯絡：+44-7768-938-765<br>
+                <br>
+                <strong>⚠️ 護照遺失處理：</strong><br>
+                1. 先報警取得報案證明<br>
+                2. 聯絡駐英代表處<br>
+                3. 用護照影本+大頭照申請臨時證件
+            </div>
+
+            <h3>✅ 其他重要文件</h3>
+            <ul>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">機票影本/電子檔</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">租車確認單（紙本+電子檔）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">住宿確認單（全部16天）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">旅遊保險單（英文版）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">信用卡影本（背面也要）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">緊急聯絡人清單（含電話）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">英國景點地址清單（英文版）</span>
+                </li>
+            </ul>
+
+            <div class="important">
+                💡 <strong>文件保管方式：</strong><br>
+                • 正本隨身攜帶<br>
+                • 影本分開放（行李箱+隨身包）<br>
+                • 電子檔存雲端（Google Drive/Email）<br>
+                • 家人也留一份在台灣
+            </div>
+        </div>
+
+        <h2>🍜 食物補給（8天自駕用）</h2>
+        <div class="section">
+            <ul>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">泡麵、即食食品</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">零食、餅乾</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">沖泡包（湯、咖啡）</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">燜燒罐 x 3-4個</span>
+                </li>
+                <li onclick="toggleCheck(this)">
+                    <span class="checkbox"></span>
+                    <span class="item-text">保溫瓶 x 2個</span>
+                </li>
+            </ul>
+        </div>
+
+        <h2>🧺 洗衣時間表</h2>
+        <div class="section">
+            <p style="font-size: 22px; line-height: 2.2;">
+                <strong>第1次：</strong>蘇格蘭高地（第3天晚上）<br>
+                <strong>第2次：</strong>愛丁堡（第5天晚上）<br>
+                <strong>第3次：</strong>倫敦（第9天）<br>
+                <strong>第4次：</strong>倫敦（第12天）
+            </p>
+            <div class="highlight">
+                💡 共有10天住宿有洗衣機，所以不用帶太多衣服！
+            </div>
+        </div>
+
+        <div class="important" style="margin-top: 40px;">
+            ⭐ 記得：每個行李箱只裝70-80%滿<br>
+            ⭐ 預留空間給購物和食物<br>
+            ⭐ 防水外套和雨傘一定要帶！
+        </div>
+
     </div>
 
-    <div class="important" style="margin-top: 40px;">
-        ⭐ 記得：每個行李箱只裝70-80%滿<br>
-        ⭐ 預留空間給購物和食物<br>
-        ⭐ 防水外套和雨傘一定要帶！
-    </div>
+    <script>
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+            updateProgress();
+            saveProgress();
+        }
 
+        function updateProgress() {
+            const allItems = document.querySelectorAll('li[onclick]');
+            const checkedItems = document.querySelectorAll('li.checked');
+            const total = allItems.length;
+            const checked = checkedItems.length;
+            const percentage = Math.round((checked / total) * 100);
+
+            document.getElementById('checkedCount').textContent = checked;
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('percentageCount').textContent = percentage + '%';
+            
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '%';
+        }
+
+        function resetAll() {
+            if (confirm('確定要重置所有項目嗎？')) {
+                const allItems = document.querySelectorAll('li[onclick]');
+                allItems.forEach(item => {
+                    item.classList.remove('checked');
+                });
+                updateProgress();
+                saveProgress();
+            }
+        }
+
+        function saveProgress() {
+            const checkedItems = [];
+            document.querySelectorAll('li.checked').forEach((item, index) => {
+                const allItems = Array.from(document.querySelectorAll('li[onclick]'));
+                checkedItems.push(allItems.indexOf(item));
+            });
+            localStorage.setItem('packingProgress', JSON.stringify(checkedItems));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('packingProgress');
+            if (saved) {
+                const checkedIndexes = JSON.parse(saved);
+                const allItems = document.querySelectorAll('li[onclick]');
+                checkedIndexes.forEach(index => {
+                    if (allItems[index]) {
+                        allItems[index].classList.add('checked');
+                    }
+                });
+            }
+            updateProgress();
+        }
+
+        window.onload = function() {
+            loadProgress();
+        };
+    </script>
 </body>
 </html>
